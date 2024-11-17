@@ -2,10 +2,10 @@
 Prototype for UOB Software Engineering &amp; Professional Practice Module
 ## Prerequesites
 Check you have the following installed:
-- python 3.12+ (Check with `python --version`)
+- [python 3.12+](https://www.python.org/downloads/) (Check with `python --version`)
 - [Poetry](https://python-poetry.org/) (Check with `poetry --version`)
 ## Install Project Dependencies
-Once poetry is installed, go to the directory with pyproject.toml (this should be the directory you cloned the repo to), and run
+Go to the directory with pyproject.toml (this should be the directory you cloned the repo to), and run
 ```
 poetry install
 ```
