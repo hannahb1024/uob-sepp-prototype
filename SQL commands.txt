@@ -1,0 +1,8 @@
+CREATE ROLE sepp NOINHERIT LOGIN PASSWORD 'password';
+CREATE DATABASE marking WITH OWNER = sepp ENCODING = 'UTF8' CONNECTION LIMIT = -1;
+\c marking sepp
+CREATE TABLE public.results(result_id integer NOT NULL, student_id integer NOT NULL, mark integer NOT NULL, marker_id integer NOT NULL, test_id integer NOT NULL, PRIMARY KEY (result_id));
+CREATE TABLE public.student(student_id integer NOT NULL, first_name character varying(15) NOT NULL, last_name character varying(20), PRIMARY KEY (student_id));
+CREATE TABLE public.marker(marker_id integer NOT NULL, module_id integer NOT NULL, first_name character varying(15) NOT NULL, last_name character varying(20) NOT NULL, role character varying(20), PRIMARY KEY (marker_id));
+CREATE TABLE public.module(module_id integer NOT NULL, module_name character varying(100), school_name character varying(50), module_lead_id integer NOT NULL, PRIMARY KEY (module_id));
+\copy public.results(result_id, student_id, mark, marker_id, test_id) FROM 'WHERE YOU HAVE SAVED THE FILE (Its DataImporting.txt)' DELIMITER ',';
