@@ -9,6 +9,7 @@ package-mode = false
 [tool.poetry.dependencies]
 python = "^3.12"
 pyqt5 = "5.15.11"
+pyqt-fluent-widgets = {version = "^1.7.1", source = "pypi"}
 
 [build-system]
 requires = ["poetry-core"]
