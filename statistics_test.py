@@ -68,9 +68,17 @@ def toScoreList(testResultList):
     return scoreList
 
 class Marker():
-    def __init__(self,markerID):
+    def __init__(self,attribute):
         global data,nonExemplaryMarkers
-        self.markerID=markerID
+        self.markerID=int(attribute[0])
+        self.schoolID=int(attribute[1])
+        self.firstName=attribute[2]
+        self.lastName=attribute[3]
+        if attribute[4].endswith("\n"):
+            self.role=attribute[4][:-1]
+        else:
+            self.role=attribute[4]
+
         self.isValid=False
         nonExemplaryMarkers.append(self)
         self.markedTests=[]
@@ -88,6 +96,9 @@ class Marker():
         for i in range(0,binned_data.numberOfBins):
             expectedResult.append((allDataBin.bins[i] - self.binnedData.bins[i]) * expectedResultMultiplier)
         self.expectedResult = expectedResult
+
+    def __str__(self):
+        return (str(self.markerID)+': '+self.firstName+' '+self.lastName+', Tests marked: '+str(self.binnedData.size))
         
     
 
@@ -98,11 +109,14 @@ def getTestID(s:str):
     testAttibutes=s.split(",")
     return int(testAttibutes[4])
 
+def getMarkerID(s:str):
+    markerAttributes=s.split(",")
+    return int(markerAttributes[0])
+
 def getData(testID):
     testDataFile=open("TestData.txt","r")
     fileData=[]
     for line in testDataFile:
-        #print(line)
         if (getTestID(line)==testID):
             fileData.append(TestResult(line.split(",")))
     testDataFile.close()
@@ -116,16 +130,25 @@ def getAllScores(testList):
     return intList
 
 def getMarkers():
-    global data,markers
+    global data
     foundMarkers = set()
     for test in data:
         if not(test.markerID in foundMarkers):
-            markers.append(Marker(test.markerID))
             foundMarkers.add(test.markerID)
+    markerDataFile=open("MarkerData.txt")
+
+    markersList=[]
+
+    for line in markerDataFile:
+        if getMarkerID(line) in foundMarkers:
+            markersList.append(Marker(line.split(",")))
+
+    markerDataFile.close()
+    return markersList
 
 
 def loadNewTest(testID):
-    global data,allDataBin
+    global data,allDataBin,markers
     data = getData(testID)
     if data==[]:
         print("No data test found with that ID.")
@@ -143,11 +166,15 @@ def loadNewTest(testID):
         tempUpper+=binned_data.binRangeSize
     allDataBin = binned_data(allScores)
 
-    getMarkers()
+    markers = getMarkers()
 
     return
 
 
+def printMarkers():
+    global markers
+    for marker in markers:
+        print(marker)
 
 data=[]
 allDataBin = None
@@ -162,16 +189,23 @@ def main():
     loadNewTest(0)
     print(allDataBin.bins)
     print(binned_data.binRanges)
+    printMarkers()
     loadNewTest(1)
     print(allDataBin.bins)
     print(binned_data.binRanges)
+    printMarkers()
     loadNewTest(8)
     print(allDataBin.bins)
     print(binned_data.binRanges)
+    printMarkers()
     loadNewTest(12)
     print(allDataBin.bins)
     print(binned_data.binRanges)
+    printMarkers()
     loadNewTest(15)
+    print(allDataBin.bins)
+    print(binned_data.binRanges)
+    printMarkers()
     loadNewTest(20)
 
 
