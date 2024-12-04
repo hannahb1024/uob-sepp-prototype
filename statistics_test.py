@@ -1,11 +1,12 @@
+import copy
 
-
-def countInRange(list , min , max):
+def countInRange(list , min , max):#Counts the number of numbers withing the given range
     count = 0
     for item in list:
         if (min<=item) and (item < max):
             count += 1
     return count
+
 
 class binned_data():
     maxValue = 0
@@ -15,12 +16,10 @@ class binned_data():
     binRangeSize = 0
     binRanges = [(0,0)]*numberOfBins
 
-
     def __init__(self, scores_list):
         
         self.bins = [None]*binned_data.numberOfBins
         self.size = len(scores_list)
-        self.compressed=False
 
         if self.size<=0:
             print("List is empty cannot bin values")
@@ -33,69 +32,93 @@ class binned_data():
                 binUpper+=binned_data.binRangeSize
             self.bins[binned_data.numberOfBins-1]=countInRange(scores_list,binLower,binUpper+1)
     
-    def compress(self):
-        for i in range(0,self.numberOfBins-1):
-            self.bins[i] /= self.size
-        self.compressed=True
-
-    def toExpected(self,expectedSize):
-        if not(self.compressed):
-            self.compress()
-        for i in range(0,self.numberOfBins-1):
-            self.bins[i] *= expectedSize
-        self.size=expectedSize
-        self.compressed=False
-    
-    def chiSquaredTest(self,expected):
+    def chiSquaredTest(self,expected):#expected is a list of nums of the same size
+        if expected==[]:#If the expected list is empty return an error value (-1)
+            return -1
         chi_squared=0
         for i in range(0,self.numberOfBins-1):
-            difference=self.bins[i]-expected.bins[i]
-            chi_squared+=(difference*difference)/expected.bins[i]
+            difference=self.bins[i]-expected[i]
+            chi_squared+= (difference*difference) if expected[i]==0 else (difference*difference)/expected[i]#Duck tape fix for dividing by 0
         return chi_squared
     
-class TestResult():
+    def add(self,binnedData):
+        for i in range(0,binned_data.numberOfBins):
+            self.bins[i]+=binnedData.bins[i]
+        self.size+=binnedData.size
+
+    def subtract(self,binnedData):
+        for i in range(0,binned_data.numberOfBins):
+            self.bins[i]-=binnedData.bins[i]
+        self.size-=binnedData.size
+    
+
+class TestResult():#Essentially a nice tuple of teh form (int,int,int,int,int)
     def __init__(self,attributes):
+        #Attributes is a string of the form int,int,int,int,int
         self.ID = int(attributes[0])
         self.studentID = int(attributes[1])
         self.score = int(attributes[2])
         self.markerID = int(attributes[3])
         self.testID = int(attributes[4])
 
-def toScoreList(testResultList):
+
+def toScoreList(testResultList):#Takes a list of objects of type TestResult and returns a list of scores from the tests
     scoreList=[]
     for testResult in testResultList:
         scoreList.append(testResult.score)
     return scoreList
 
-class Marker():
-    def __init__(self,attribute):
-        global data,nonExemplaryMarkers
-        self.markerID=int(attribute[0])
-        self.schoolID=int(attribute[1])
-        self.firstName=attribute[2]
-        self.lastName=attribute[3]
-        if attribute[4].endswith("\n"):
-            self.role=attribute[4][:-1]
-        else:
-            self.role=attribute[4]
 
-        self.isValid=False
-        nonExemplaryMarkers.append(self)
-        self.markedTests=[]
+class Marker():
+    def __init__(self,attributes):
+        global data,nonExemplaryMarkers
+        #attributes is a string of the form int,int,string,string,string
+        self.markerID=int(attributes[0])
+        self.moduleID=int(attributes[1])
+        self.firstName=attributes[2]
+        self.lastName=attributes[3]
+        if attributes[4].endswith("\n"):#the last value can come out weird because its read from a file this sorts it
+            self.role=attributes[4][:-1]
+        else:
+            self.role=attributes[4]
+
+        self.isExemplary=False#default is no
+        nonExemplaryMarkers.append(self)#global list for all non exemplary markers for general use and processing
+
+        self.markedTests=[]#List of all tests this marker has marked
         for testResult in data:
             if testResult.markerID==self.markerID:
                 self.markedTests.append(testResult)
-        self.binnedData=binned_data(toScoreList(self.markedTests))
-        self.expectedResult = None
-        self.getExpectedResult()
+
+        self.binnedData=binned_data(toScoreList(self.markedTests))#Process list of tests into binned data for chi-squared tests
+        self.expectedResultAll = self.getExpectedResultAll()#Function that creates the expected result from all the other test results
+        self.chiSquaredAll=self.binnedData.chiSquaredTest(self.expectedResultAll)
+        self.expectedResultExemplary = []
+        self.chiSquaredExemplary = -1
     
-    def getExpectedResult(self):
+    def recalculateExemplaryValues(self):
+        self.expectedResultExemplary=self.getExpectedResultExemplary()
+        self.chiSquaredExemplary=self.binnedData.chiSquaredTest(self.expectedResultExemplary)
+
+
+    def getExpectedResultAll(self):#returns a float/double list of size numberOfBins of the expected result 
         global allDataBin
         expectedResult=[]
-        expectedResultMultiplier=self.binnedData.size*(allDataBin.size - self.binnedData.size)#divide by difference in data times by size
+        expectedResultSize=allDataBin.size - self.binnedData.size
+        expectedResultMultiplier=self.binnedData.size/expectedResultSize#divide by difference in data times by size
         for i in range(0,binned_data.numberOfBins):
             expectedResult.append((allDataBin.bins[i] - self.binnedData.bins[i]) * expectedResultMultiplier)
-        self.expectedResult = expectedResult
+        return expectedResult
+    
+    def getExpectedResultExemplary(self):
+        global exemplaryDataBin
+        expectedResult=[]
+        expectedResultMultiplier=self.binnedData.size/exemplaryDataBin.size
+        for i in range(0,binned_data.numberOfBins):
+            expectedResult.append(exemplaryDataBin.bins[i]*expectedResultMultiplier)
+        return expectedResult
+    
+    
 
     def __str__(self):
         return (str(self.markerID)+': '+self.firstName+' '+self.lastName+', Tests marked: '+str(self.binnedData.size))
@@ -103,17 +126,18 @@ class Marker():
     
 
 
-
-
-def getTestID(s:str):
+#----------------------------------------------------------------
+# These functions use the file system will need to change to sql
+#---------------------------------------------------------------
+def getTestID(s:str):#Extracts the test id from the test data string
     testAttibutes=s.split(",")
     return int(testAttibutes[4])
 
-def getMarkerID(s:str):
+def getMarkerID(s:str):#Extracts the markerid from the marker data string
     markerAttributes=s.split(",")
     return int(markerAttributes[0])
 
-def getData(testID):
+def getData(testID):#Creates a list of TestResult objects 
     testDataFile=open("TestData.txt","r")
     fileData=[]
     for line in testDataFile:
@@ -129,7 +153,51 @@ def getAllScores(testList):
         intList.append(test.score)
     return intList
 
-def getMarkers():
+def addExemplaryMarker(marker:Marker):
+    global nonExemplaryMarkers,exemplaryMarkers,exemplaryDataBin
+    marker.isExemplary=True
+    nonExemplaryMarkers.remove(marker)
+    exemplaryMarkers.append(marker)
+    if exemplaryDataBin==None:
+        exemplaryDataBin=copy.deepcopy(marker.binnedData)
+    else:
+        exemplaryDataBin.add(marker.binnedData)
+    for m in nonExemplaryMarkers:
+        m.recalculateExemplaryValues()
+    marker.chiSquaredExemplary=-1
+    marker.expectedResultExemplary = []
+    
+
+def removeExemplaryMarker(marker:Marker):
+    global nonExemplaryMarkers,exemplaryMarkers,exemplaryDataBin
+    marker.isExemplary=False
+    nonExemplaryMarkers.append(marker)
+    exemplaryMarkers.remove(marker)
+    if exemplaryMarkers==[]:
+        exemplaryDataBin=None
+    else:
+       exemplaryDataBin.subtract(marker.binnedData) 
+    for m in nonExemplaryMarkers:
+            m.recalculateExemplaryValues()
+                            
+
+def promoteRole(role:str):
+    global nonExemplaryMarkers
+    for marker in nonExemplaryMarkers:
+        if marker.role==role:
+            addExemplaryMarker(marker)
+
+def demoteRole(role:str):
+    global exemplaryMarkers
+    for marker in exemplaryMarkers:
+        if marker.role==role:
+            removeExemplaryMarker(marker)
+
+
+#----------------------------------------------
+#Main functions for loading classes and data
+#----------------------------------------------
+def getMarkers():#Returns a list of Marker objects based on global test data
     global data
     foundMarkers = set()
     for test in data:
@@ -147,7 +215,7 @@ def getMarkers():
     return markersList
 
 
-def loadNewTest(testID):
+def loadNewTest(testID):#Loads all data and initialises all objects needed for the statistics test
     global data,allDataBin,markers
     data = getData(testID)
     if data==[]:
@@ -175,6 +243,8 @@ def printMarkers():
     global markers
     for marker in markers:
         print(marker)
+        print(marker.chiSquaredAll)
+        print(marker.chiSquaredExemplary)
 
 data=[]
 allDataBin = None
@@ -189,24 +259,17 @@ def main():
     loadNewTest(0)
     print(allDataBin.bins)
     print(binned_data.binRanges)
+    promoteRole("Module Lead")
+    promoteRole("Module Staff")
+    print(markers[0].expectedResultExemplary)
+    demoteRole("Module Staff")
+    print(markers[0].expectedResultExemplary)
     printMarkers()
-    loadNewTest(1)
-    print(allDataBin.bins)
-    print(binned_data.binRanges)
+    promoteRole("Module Staff")
     printMarkers()
-    loadNewTest(8)
-    print(allDataBin.bins)
-    print(binned_data.binRanges)
-    printMarkers()
-    loadNewTest(12)
-    print(allDataBin.bins)
-    print(binned_data.binRanges)
-    printMarkers()
-    loadNewTest(15)
-    print(allDataBin.bins)
-    print(binned_data.binRanges)
-    printMarkers()
-    loadNewTest(20)
+    print(markers[0].binnedData.bins)
+    print(markers[0].expectedResultAll)
+    print(markers[0].binnedData.chiSquaredTest(markers[0].expectedResultAll))
 
 
 if __name__ == '__main__':
