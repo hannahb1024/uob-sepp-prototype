@@ -6,6 +6,7 @@
 - Decision was made to break down work into work units, which would each be assigned to one/multiple team members.
   - Work units will be monitored on a Github projects Kanban board.
 - Basic UI Mockups were made in the meeting
+  [Initial UI Mockup](./EDR_example_UI-meeting1.webp)
 - Special consideration was made for where people's functions and work interacts with each other and how these would interface.
 - Decisions were made on the database:
   - Since most data processing is done client-side with CSRS, the server-side consists of essentially just the database.
