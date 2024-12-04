@@ -118,6 +118,17 @@ class Marker():
             expectedResult.append(exemplaryDataBin.bins[i]*expectedResultMultiplier)
         return expectedResult
     
+    def getConcernLevel(self):
+        global criticalValues
+        if self.isExemplary:
+            return 0#Exemplary markers ar etrusted so have no concern.
+        concern=1
+        for tup in criticalValues:
+            if self.chiSquaredExemplary<tup[0] and self.chiSquaredAll<tup[0]:
+                return concern
+            concern+=1
+        return concern #Currently max concern is 6 and that happens when theres a 0.1% chance the markers data is valid
+    
     
 
     def __str__(self):
@@ -175,23 +186,39 @@ def removeExemplaryMarker(marker:Marker):
     exemplaryMarkers.remove(marker)
     if exemplaryMarkers==[]:
         exemplaryDataBin=None
+        for m in nonExemplaryMarkers:
+            m.expectedResultExemplary = []
+            m.chiSquaredExemplary = -1
     else:
        exemplaryDataBin.subtract(marker.binnedData) 
-    for m in nonExemplaryMarkers:
-            m.recalculateExemplaryValues()
+       for m in nonExemplaryMarkers:
+                m.recalculateExemplaryValues()
                             
 
-def promoteRole(role:str):
+def promoteRole(markerRole:str):
     global nonExemplaryMarkers
-    for marker in nonExemplaryMarkers:
-        if marker.role==role:
-            addExemplaryMarker(marker)
+    tempList=[]
+    for potentialMarker in nonExemplaryMarkers:
+        if potentialMarker.role==markerRole:
+            tempList.append(potentialMarker)
+    for item in tempList:
+        addExemplaryMarker(item)
 
-def demoteRole(role:str):
+def demoteRole(markerRole:str):
     global exemplaryMarkers
-    for marker in exemplaryMarkers:
-        if marker.role==role:
-            removeExemplaryMarker(marker)
+    tempList=[]
+    for potentialMarker in exemplaryMarkers:
+        if potentialMarker.role==markerRole:
+            tempList.append(potentialMarker)
+    for item in tempList:
+        removeExemplaryMarker(item)
+
+def demoteAll():
+    global exemplaryMarkers
+    tempList=exemplaryMarkers.copy
+    for potentialMarker in tempList:
+        print(potentialMarker)
+        removeExemplaryMarker(potentialMarker)
 
 
 #----------------------------------------------
@@ -238,13 +265,30 @@ def loadNewTest(testID):#Loads all data and initialises all objects needed for t
 
     return
 
+def getConcern(marker:Marker):
+    match marker.getConcernLevel():
+        case 0:
+            print("🔵")
+        case 1:
+            print("🟢")
+        case 2:
+            print("🟡")
+        case 3:
+            print("🟠")
+        case 4:
+            print("🟧")
+        case 5:
+            print("🔴")
+        case 6:
+            print("🟥")
 
 def printMarkers():
     global markers
-    for marker in markers:
-        print(marker)
-        print(marker.chiSquaredAll)
-        print(marker.chiSquaredExemplary)
+    for mk in markers:
+        print(mk)
+        print(mk.chiSquaredAll)
+        print(mk.chiSquaredExemplary)
+        getConcern(mk)
 
 data=[]
 allDataBin = None
@@ -252,21 +296,29 @@ markers = []
 nonExemplaryMarkers=[]
 exemplaryMarkers=[]
 exemplaryDataBin = None
+criticalValues=[(13.442,0.2),(15.987,0.1),(18.307,0.05),(23.209,0.01),(29.588,0.001)]#The right value is the probibility the chi squared exceeds the right value
 
 
 
 def main():
     loadNewTest(0)
+    print("========================================================")
+    printMarkers()
+    print("========================================================")
+    promoteRole("Module Lead")
+    printMarkers()
+    print("========================================================")
+    promoteRole("Module Staff")
+    printMarkers()
+    print("========================================================")
+    demoteRole("Module Lead")
+    printMarkers()
+    print("========================================================")
+
     print(allDataBin.bins)
     print(binned_data.binRanges)
-    promoteRole("Module Lead")
-    promoteRole("Module Staff")
-    print(markers[0].expectedResultExemplary)
-    demoteRole("Module Staff")
-    print(markers[0].expectedResultExemplary)
-    printMarkers()
-    promoteRole("Module Staff")
-    printMarkers()
+
+    print(exemplaryMarkers)
     print(markers[0].binnedData.bins)
     print(markers[0].expectedResultAll)
     print(markers[0].binnedData.chiSquaredTest(markers[0].expectedResultAll))
