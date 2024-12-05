@@ -1,5 +1,7 @@
 from PyQt5.QtWidgets import *
 from qfluentwidgets import *
+import statistics_test as st
+import graphing as g
 
 class MarkerCard(ElevatedCardWidget): # https://qfluentwidgets.com/pages/components/cardwidget
 
@@ -34,6 +36,8 @@ def main():
     windowLayout.addWidget(MarkerCard("Bob Marley", "71", "Module staff"))
     windowLayout.addWidget(MarkerCard("Bob Ross", "72", "Module staff"))
     windowLayout.addWidget(MarkerCard("Bob Odenkirk", "73", "Module staff"))
+
+
 
     window.show()
     app.exec_()
