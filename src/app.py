@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import *
 from qfluentwidgets import *
-import statistics_test as st
-import graphing as g
+
+def exampleTestingFunction():
+    return "Hello, world!"
 
 class MarkerCard(ElevatedCardWidget): # https://qfluentwidgets.com/pages/components/cardwidget
 
