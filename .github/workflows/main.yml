@@ -1,0 +1,21 @@
+# https://medium.com/data-epic/unit-testing-in-python-and-continuous-integration-with-github-actions-bdb86a207197
+name: unit_test_continuous_integration
+
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Setup Python
+        uses: actions/setup-python@v4
+
+      - name: Install Dependencies & Configure Venv
+        run: poetry install && poetry
+      
+      - name: Run Tests
+        run: poetry run python -m unittest discover -s test -p '*_tests.py'
+      
