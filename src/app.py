@@ -1,5 +1,4 @@
 from PyQt5.QtWidgets import *
-from pyqtgraph.examples.MatrixDisplayExample import main_window
 from qfluentwidgets import *
 import statistics_test as st
 import graphing as g
