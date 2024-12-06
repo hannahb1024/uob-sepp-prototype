@@ -40,6 +40,7 @@ class MarkerListPlaceholder(ElevatedCardWidget):
 
 def inspectMarker(marker: st.Marker):
     print("Inspecting marker...")
+    mainWindowLayout.addWidget(g.MarkerGraph(marker))
 
 def loadDatabase(markerListPlaceholder):
     markerListPlaceholder.setParent(None)
