@@ -1,7 +1,0 @@
-# Meeting 3 Minutes
-Team members made a progress report:
-- Sam has found issues with their containerisation implementation, but has made progress by bundling sql commands into an init script that will run as soon as the container is spun up.
-- Hannah has assisted Hugh with poetry dependencies, and Sam with containerisation. She has implemented functions to load markers into the UI, but is yet to implement functions to load different datasets than the first example. She has also readied docker, a particular user, and ssh on her own server for automatic deployment when the container is ready and working.
-- Hugh has implemented the slider function, and is working to fix newly discovered issues arising from interfacing with the statistics test.
-- Mathias has performed general bug fixes with his code. He has liased with Hugh to implement the graphing feature.
-The need for testing was underlined, and we decided to use the unittest library, since it seems to be a main standard, and it is simmilar to junit which the team is familiar with. We decided to use github actions to implement this as a part of CI. Originally, the need for rapid development had overshadowed testing, and we had not implemented test-driven development. However, the team recognises that now the program is increasing in size and complexity, testing is now essential. While thinking about our testing strategy, we realised our code was not written in immediately testable way, so we will aim to refactor the code into smaller functions and classes that can be tested easily.
