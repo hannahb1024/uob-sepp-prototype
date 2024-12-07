@@ -3,20 +3,25 @@ from qfluentwidgets import *
 import statistics_test as st
 import graphing as g
 
-
+class PlaceholderCard(ElevatedCardWidget):
+    def __init__(self, width, height, parent=None):
+        super().__init__(parent)
+        self.setFixedSize(width, height)
 
 class MarkerCard(ElevatedCardWidget): # https://qfluentwidgets.com/pages/components/cardwidget
-
     def __init__(self, marker: st.Marker, mainWindowOwner, parent=None):
         super().__init__(parent)
         self.mainWindowOwner = mainWindowOwner
         self.marker = marker
+        self.trustIsChecked = False
         self.markerName = BodyLabel("Name: " + marker.firstName + " " + marker.lastName, self)
         self.numTestsMarked = BodyLabel("Tests marked: " + str(len(marker.markedTests)), self)
         self.rank = BodyLabel("Rank: " + marker.role, self)
         self.trust = CheckBox("Trust")
         self.inspect = PushButton("Inspect")
-        self.inspect.clicked.connect(lambda: inspectMarker(self.marker, self.mainWindowOwner))
+
+        self.inspect.clicked.connect(self.inspectMarker)
+        self.trust.toggled.connect(self.toggleTrusted)
 
         self.trustAndInspectHorizontal = QWidget()
         self.trustAndInspectHorizontalLayout = QHBoxLayout()
@@ -34,29 +39,17 @@ class MarkerCard(ElevatedCardWidget): # https://qfluentwidgets.com/pages/compone
 
         self.setFixedSize(400, 180)
 
-class PlaceholderCard(ElevatedCardWidget):
-    def __init__(self, width, height, parent=None):
-        super().__init__(parent)
-        self.setFixedSize(width, height)
+    def toggleTrusted(self):
+        if self.trustIsChecked:
+            st.removeExemplaryMarker(self.marker)
+            self.trustIsChecked = False
+        else:
+            st.addExemplaryMarker(self.marker)
+            self.trustIsChecked = True
 
-def inspectMarker(marker: st.Marker, mainWindowOwner):
-    print("Inspecting marker...")
-    mainWindowOwner.graphViewPlaceholder.setParent(None)
-    mainWindowOwner.rightPaneView.addWidget(g.MarkerGraph(marker))
-
-def loadDatabase(mainWindowOwner):
-    mainWindowOwner.markerListPlaceholder.setParent(None)
-    scrollArea = SingleDirectionScrollArea()
-    scrollArea.setFixedSize(425, 800)
-
-    view = QWidget()
-    layout = QVBoxLayout(view)
-    st.loadNewTest(0)
-    for marker in st.getMarkers():
-        layout.addWidget(MarkerCard(marker, mainWindowOwner))
-
-    scrollArea.setWidget(view)
-    mainWindowOwner.leftPaneView.addWidget(scrollArea)
+    def inspectMarker(self):
+        self.mainWindowOwner.graphViewPlaceholder.setParent(None)
+        self.mainWindowOwner.rightPaneView.addWidget(g.MarkerGraph(self.marker))
 
 class mainWindow(QWidget):
     def __init__(self, parent=None):
@@ -77,7 +70,7 @@ class mainWindow(QWidget):
         self.graphViewPlaceholder = PlaceholderCard(800, 838)
 
         loadDatabaseButton = PushButton("Load database")
-        loadDatabaseButton.clicked.connect(lambda: loadDatabase(self))
+        loadDatabaseButton.clicked.connect(self.loadDatabase)
         self.leftPaneView.addWidget(loadDatabaseButton)
 
         self.leftPaneView.addWidget(self.markerListPlaceholder)
@@ -85,6 +78,20 @@ class mainWindow(QWidget):
 
         mainWindowView.addWidget(leftPane)
         mainWindowView.addWidget(rightPane)
+
+    def loadDatabase(self):
+        self.markerListPlaceholder.setParent(None)
+        scrollArea = SingleDirectionScrollArea()
+        scrollArea.setFixedSize(425, 800)
+
+        view = QWidget()
+        layout = QVBoxLayout(view)
+        st.loadNewTest(0)
+        for marker in st.getMarkers():
+            layout.addWidget(MarkerCard(marker, self))
+
+        scrollArea.setWidget(view)
+        self.leftPaneView.addWidget(scrollArea)
 
 
 def main():
