@@ -148,23 +148,23 @@ def getMarkerID(s:str):#Extracts the markerid from the marker data string
     markerAttributes=s.split(",")
     return int(markerAttributes[0])
 
-def getData(testID):#Creates a list of TestResult objects 
-    testDataFile=open("data/TestData.txt","r")
+def getData(testID):#Creates a list of TestResult objects. NEEDS TO BE UPDATED FOR DATABASE
+    testDataFile=open("../data/TestData.txt","r")#Loads the file
     fileData=[]
-    for line in testDataFile:
+    for line in testDataFile:#Create a new TestResult object and add it to the return list if its ID matches
         if (getTestID(line)==testID):
-            fileData.append(TestResult(line.split(",")))
-    testDataFile.close()
-    return fileData
+            fileData.append(TestResult(line.split(",")))# -----------   IMPORTANT!!! ------------
+    testDataFile.close()#       The testResult contructor takes a list of strings and extracts the data from that if you change the
+    return fileData#            datatype being read then you will need to update the constructor. Relevant lines 58-62
 
 
-def getAllScores(testList):
+def getAllScores(testList):#Function for extracting teh list of scores from a list of TestResult objects
     intList=[]
     for test in testList:
         intList.append(test.score)
     return intList
 
-def addExemplaryMarker(marker:Marker):
+def addExemplaryMarker(marker:Marker):#To be ran every time a marker is marked as exemplary, passing that marker into the function
     global nonExemplaryMarkers,exemplaryMarkers,exemplaryDataBin
     marker.isExemplary=True
     nonExemplaryMarkers.remove(marker)
@@ -179,7 +179,7 @@ def addExemplaryMarker(marker:Marker):
     marker.expectedResultExemplary = []
     
 
-def removeExemplaryMarker(marker:Marker):
+def removeExemplaryMarker(marker:Marker):#To be ran every time a marker is unmarked as exemplary, passing that marker into the function
     global nonExemplaryMarkers,exemplaryMarkers,exemplaryDataBin
     marker.isExemplary=False
     nonExemplaryMarkers.append(marker)
@@ -195,7 +195,7 @@ def removeExemplaryMarker(marker:Marker):
                 m.recalculateExemplaryValues()
                             
 
-def promoteRole(markerRole:str):
+def promoteRole(markerRole:str):#Function for testing - marks every marker with the given role as exemplary
     global nonExemplaryMarkers
     tempList=[]
     for potentialMarker in nonExemplaryMarkers:
@@ -204,7 +204,7 @@ def promoteRole(markerRole:str):
     for item in tempList:
         addExemplaryMarker(item)
 
-def demoteRole(markerRole:str):
+def demoteRole(markerRole:str):#Function for testing - unmarks every marker with the given role from being exemplary
     global exemplaryMarkers
     tempList=[]
     for potentialMarker in exemplaryMarkers:
@@ -213,7 +213,7 @@ def demoteRole(markerRole:str):
     for item in tempList:
         removeExemplaryMarker(item)
 
-def demoteAll():
+def demoteAll():#Function for testing - unmarks every marker from being exemplary
     global exemplaryMarkers
     tempList=exemplaryMarkers.copy
     for potentialMarker in tempList:
@@ -224,21 +224,21 @@ def demoteAll():
 #----------------------------------------------
 #Main functions for loading classes and data
 #----------------------------------------------
-def getMarkers():#Returns a list of Marker objects based on global test data
+def getMarkers():#Returns a list of Marker objects. NEEDS TO BE UPDATED FOR DATABASE
     global data
-    foundMarkers = set()
+    foundMarkers = set()#Collect every unique marker ID
     for test in data:
         if not(test.markerID in foundMarkers):
             foundMarkers.add(test.markerID)
-    markerDataFile=open("data/MarkerData.txt")
 
+
+    markerDataFile=open("../data/MarkerData.txt")
     markersList=[]
-
-    for line in markerDataFile:
+    for line in markerDataFile:#Create a new marker object if the line matches a unique marker ID
         if getMarkerID(line) in foundMarkers:
-            markersList.append(Marker(line.split(",")))
-
-    markerDataFile.close()
+            markersList.append(Marker(line.split(",")))# -----------   IMPORTANT!!! ------------
+#                             The Marker constructor takes a list of strings and extracts data from that. If you change the datatype
+    markerDataFile.close()#   being read you will need to change the constructor. Relevant lines 76-83
     return markersList
 
 
@@ -301,7 +301,7 @@ criticalValues=[(13.442,0.2),(15.987,0.1),(18.307,0.05),(23.209,0.01),(29.588,0.
 
 
 def main():
-    loadNewTest(0)
+    loadNewTest(1)
     print("========================================================")
     printMarkers()
     print("========================================================")
