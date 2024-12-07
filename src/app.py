@@ -3,19 +3,20 @@ from qfluentwidgets import *
 import statistics_test as st
 import graphing as g
 
-mainWindowLayout = QVBoxLayout()
+
 
 class MarkerCard(ElevatedCardWidget): # https://qfluentwidgets.com/pages/components/cardwidget
 
-    def __init__(self, marker: st.Marker, parent=None):
+    def __init__(self, marker: st.Marker, mainWindowOwner, parent=None):
         super().__init__(parent)
+        self.mainWindowOwner = mainWindowOwner
         self.marker = marker
         self.markerName = BodyLabel("Name: " + marker.firstName + " " + marker.lastName, self)
         self.numTestsMarked = BodyLabel("Tests marked: " + str(len(marker.markedTests)), self)
         self.rank = BodyLabel("Rank: " + marker.role, self)
         self.trust = CheckBox("Trust")
         self.inspect = PushButton("Inspect")
-        self.inspect.clicked.connect(lambda: inspectMarker(self.marker))
+        self.inspect.clicked.connect(lambda: inspectMarker(self.marker, self.mainWindowOwner))
 
         self.trustAndInspectHorizontal = QWidget()
         self.trustAndInspectHorizontalLayout = QHBoxLayout()
@@ -33,17 +34,18 @@ class MarkerCard(ElevatedCardWidget): # https://qfluentwidgets.com/pages/compone
 
         self.setFixedSize(400, 180)
 
-class MarkerListPlaceholder(ElevatedCardWidget):
-    def __init__(self, parent=None):
+class PlaceholderCard(ElevatedCardWidget):
+    def __init__(self, width, height, parent=None):
         super().__init__(parent)
-        self.setFixedSize(425, 800)
+        self.setFixedSize(width, height)
 
-def inspectMarker(marker: st.Marker):
+def inspectMarker(marker: st.Marker, mainWindowOwner):
     print("Inspecting marker...")
-    mainWindowLayout.addWidget(g.MarkerGraph(marker))
+    mainWindowOwner.graphViewPlaceholder.setParent(None)
+    mainWindowOwner.rightPaneView.addWidget(g.MarkerGraph(marker))
 
-def loadDatabase(markerListPlaceholder):
-    markerListPlaceholder.setParent(None)
+def loadDatabase(mainWindowOwner):
+    mainWindowOwner.markerListPlaceholder.setParent(None)
     scrollArea = SingleDirectionScrollArea()
     scrollArea.setFixedSize(425, 800)
 
@@ -51,23 +53,43 @@ def loadDatabase(markerListPlaceholder):
     layout = QVBoxLayout(view)
     st.loadNewTest(0)
     for marker in st.getMarkers():
-        layout.addWidget(MarkerCard(marker))
+        layout.addWidget(MarkerCard(marker, mainWindowOwner))
 
     scrollArea.setWidget(view)
-    mainWindowLayout.addWidget(scrollArea)
+    mainWindowOwner.leftPaneView.addWidget(scrollArea)
+
+class mainWindow(QWidget):
+    def __init__(self, parent=None):
+
+        mainWindowView = QHBoxLayout()
+        self.leftPaneView = QVBoxLayout()
+        self.rightPaneView = QVBoxLayout()
+
+        super().__init__(parent)
+        self.setLayout(mainWindowView)
+
+        leftPane = QWidget()
+        rightPane = QWidget()
+        leftPane.setLayout(self.leftPaneView)
+        rightPane.setLayout(self.rightPaneView)
+
+        self.markerListPlaceholder = PlaceholderCard(425, 800)
+        self.graphViewPlaceholder = PlaceholderCard(800, 838)
+
+        loadDatabaseButton = PushButton("Load database")
+        loadDatabaseButton.clicked.connect(lambda: loadDatabase(self))
+        self.leftPaneView.addWidget(loadDatabaseButton)
+
+        self.leftPaneView.addWidget(self.markerListPlaceholder)
+        self.rightPaneView.addWidget(self.graphViewPlaceholder)
+
+        mainWindowView.addWidget(leftPane)
+        mainWindowView.addWidget(rightPane)
+
 
 def main():
     app = QApplication([])
-    window = QWidget()
-    window.setLayout(mainWindowLayout)
-
-    markerListPlaceholder = MarkerListPlaceholder()
-
-    loadDatabaseButton = PushButton("Load database")
-    loadDatabaseButton.clicked.connect(lambda: loadDatabase(markerListPlaceholder))
-    mainWindowLayout.addWidget(loadDatabaseButton)
-
-    mainWindowLayout.addWidget(markerListPlaceholder)
+    window = mainWindow()
 
     window.show()
     app.exec_()
