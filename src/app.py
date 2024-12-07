@@ -1,3 +1,4 @@
+import PyQt5.QtCore as core
 from PyQt5.QtWidgets import *
 from qfluentwidgets import *
 import statistics_test as st
@@ -14,9 +15,21 @@ class MarkerCard(ElevatedCardWidget): # https://qfluentwidgets.com/pages/compone
         self.mainWindowOwner = mainWindowOwner
         self.marker = marker
         self.trustIsChecked = False
-        self.markerName = BodyLabel("Name: " + marker.firstName + " " + marker.lastName, self)
-        self.numTestsMarked = BodyLabel("Tests marked: " + str(len(marker.markedTests)), self)
-        self.rank = BodyLabel("Rank: " + marker.role, self)
+        
+        self.generateLabels()
+        self.addButtons()
+
+        self.vBoxLayout = QVBoxLayout(self)
+        self.vBoxLayout.setSpacing(10)
+
+        self.vBoxLayout.addWidget(self.markerName)
+        self.vBoxLayout.addWidget(self.numTestsMarked)
+        self.vBoxLayout.addWidget(self.rank)
+        self.vBoxLayout.addWidget(self.trustAndInspectHorizontal)
+
+        self.setFixedSize(400, 180)
+
+    def addButtons(self):
         self.trust = CheckBox("Trust")
         self.inspect = PushButton("Inspect")
 
@@ -28,16 +41,11 @@ class MarkerCard(ElevatedCardWidget): # https://qfluentwidgets.com/pages/compone
         self.trustAndInspectHorizontalLayout.addWidget(self.trust)
         self.trustAndInspectHorizontalLayout.addWidget(self.inspect)
         self.trustAndInspectHorizontal.setLayout(self.trustAndInspectHorizontalLayout)
-
-        self.vBoxLayout = QVBoxLayout(self)
-        self.vBoxLayout.setSpacing(10)
-
-        self.vBoxLayout.addWidget(self.markerName)
-        self.vBoxLayout.addWidget(self.numTestsMarked)
-        self.vBoxLayout.addWidget(self.rank)
-        self.vBoxLayout.addWidget(self.trustAndInspectHorizontal)
-
-        self.setFixedSize(400, 180)
+    
+    def generateLabels(self):
+        self.markerName = BodyLabel("Name: " + self.marker.firstName + " " + self.marker.lastName, self)
+        self.numTestsMarked = BodyLabel("Tests marked: " + str(len(self.marker.markedTests)), self)
+        self.rank = BodyLabel("Rank: " + self.marker.role, self)
 
     def toggleTrusted(self):
         if self.trustIsChecked:
@@ -53,12 +61,11 @@ class MarkerCard(ElevatedCardWidget): # https://qfluentwidgets.com/pages/compone
 
 class mainWindow(QWidget):
     def __init__(self, parent=None):
-
+        super().__init__(parent)
         mainWindowView = QHBoxLayout()
         self.leftPaneView = QVBoxLayout()
         self.rightPaneView = QVBoxLayout()
 
-        super().__init__(parent)
         self.setLayout(mainWindowView)
 
         leftPane = QWidget()
@@ -92,7 +99,6 @@ class mainWindow(QWidget):
 
         scrollArea.setWidget(view)
         self.leftPaneView.addWidget(scrollArea)
-
 
 def main():
     app = QApplication([])
