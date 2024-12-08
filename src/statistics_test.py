@@ -149,7 +149,7 @@ def getMarkerID(s:str):#Extracts the markerid from the marker data string
     return int(markerAttributes[0])
 
 def getData(testID):#Creates a list of TestResult objects. NEEDS TO BE UPDATED FOR DATABASE
-    testDataFile=open("../data/TestData.txt","r")#Loads the file
+    testDataFile=open("data/TestData.txt","r")#Loads the file
     fileData=[]
     for line in testDataFile:#Create a new TestResult object and add it to the return list if its ID matches
         if (getTestID(line)==testID):
@@ -232,7 +232,7 @@ def getMarkers():#Returns a list of Marker objects. NEEDS TO BE UPDATED FOR DATA
             foundMarkers.add(test.markerID)
 
 
-    markerDataFile=open("../data/MarkerData.txt")
+    markerDataFile=open("data/MarkerData.txt")
     markersList=[]
     for line in markerDataFile:#Create a new marker object if the line matches a unique marker ID
         if getMarkerID(line) in foundMarkers:
