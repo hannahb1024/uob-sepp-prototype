@@ -54,12 +54,14 @@ class MarkerGraph(ElevatedCardWidget):
         for k in st.binned_data.binRanges:
             theirX.append((k[0] + k[1])/2)
 
-        expBG = BarGraphItem(x = theirX, height = expMarkerMarks, width = 5, brush = 'g')
+        if expMarkerMarks != [None] * 10:
+            expBG = BarGraphItem(x = theirX, height = expMarkerMarks, width = 5, brush = 'g')
+            graph.addItem(expBG)
+            
         allBG = BarGraphItem(x = theirX, height = allMarkerMarks, width = 5, brush = 'b')
-        self.theirBG = BarGraphItem(x = theirX, height = theirMarkerMarks, width = 5, brush = 'r')
-
-        graph.addItem(expBG)
         graph.addItem(allBG)
+
+        self.theirBG = BarGraphItem(x = theirX, height = theirMarkerMarks, width = 5, brush = 'r')
         graph.addItem(self.theirBG)
 
         return graph
