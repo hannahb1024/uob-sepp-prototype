@@ -45,23 +45,27 @@ class MarkerGraph(ElevatedCardWidget):
     
     def getGraph(self):
         graph = PlotWidget()
-        expMarkerMarks = st.binned_data(self.m.expectedResultExemplary).bins
-        allMarkerMarks = st.binned_data(self.m.expectedResultAll).bins
+        expMarkerMarks = self.m.expectedResultExemplary
+        allMarkerMarks = self.m.expectedResultAll
         theirMarkerMarks = self.m.binnedData.bins
         
         theirX = []
+        expX = []
+        allX = []
 
         for k in st.binned_data.binRanges:
             theirX.append((k[0] + k[1])/2)
+            expX.append(((k[0] + k[1])/2)+1)
+            allX.append(((k[0] + k[1])/2)-1)
 
         if expMarkerMarks != [None] * 10:
-            expBG = BarGraphItem(x = theirX, height = expMarkerMarks, width = 5, brush = 'g')
+            expBG = BarGraphItem(x = expX, height = expMarkerMarks, width = 1, brush = 'g')
             graph.addItem(expBG)
             
-        allBG = BarGraphItem(x = theirX, height = allMarkerMarks, width = 5, brush = 'b')
+        allBG = BarGraphItem(x = allX, height = allMarkerMarks, width = 1, brush = 'b')
         graph.addItem(allBG)
 
-        self.theirBG = BarGraphItem(x = theirX, height = theirMarkerMarks, width = 5, brush = 'r')
+        self.theirBG = BarGraphItem(x = theirX, height = theirMarkerMarks, width = 1, brush = 'r')
         graph.addItem(self.theirBG)
 
         return graph
