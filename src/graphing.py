@@ -8,6 +8,10 @@ class MarkerGraph(ElevatedCardWidget):
 
     def __init__(self, marker: st.Marker):
         super().__init__()
+        self.m = marker
+        self.sc = st.toScoreList(self.m.markedTests)
+        self.mod = 0
+
         self.graphLayout = QVBoxLayout(self)
         self.graphLayout.setSpacing(10)
 
@@ -20,45 +24,70 @@ class MarkerGraph(ElevatedCardWidget):
         self.slider.setTickInterval(2)
         self.slider.setTickPosition(QSlider.TicksBothSides)
 
-        self.slider.valueChanged.connect(lambda : print(self.slider.value()/2))
+        self.slider.valueChanged.connect(self.sliderChange)
 
         self.saveButton = PushButton("Save")
 
         self.expButton = PushButton("Optimal due to exemplary markers")
+        self.expButton.pressed.connect(self.updateToFitExp)
 
         self.allButton = PushButton("Optimal due to all markers")
+        self.allButton.pressed.connect(self.updateToFitAll)
         
-        self.graphLayout.addWidget(self.getGraph(marker))
+        self.graph = self.getGraph()
+
+        self.graphLayout.addWidget(self.graph)
         self.graphLayout.addWidget(self.slider)
         self.graphLayout.addWidget(self.saveButton)
         self.graphLayout.addWidget(self.expButton)
         self.graphLayout.addWidget(self.allButton)
 
     
-    def getGraph(self, marker: st.Marker):
+    def getGraph(self):
         graph = PlotWidget()
-        expMarkerMarks = st.binned_data(marker.expectedResultExemplary)
-        allMarkerMarks = st.binned_data(marker.expectedResultAll)
-        theirMarkerMarks = marker.binnedData
+        expMarkerMarks = self.m.expectedResultExemplary
+        allMarkerMarks = self.m.expectedResultAll
+        theirMarkerMarks = self.m.binnedData.bins
         
+        theirX = []
         expX = []
         allX = []
-        theirX = []
 
-        for i in expMarkerMarks.binRanges:
-            expX.append((i[0] + i[1])/2)
-        for j in allMarkerMarks.binRanges:
-            allX.append((j[0] + j[1])/2)
-        for k in theirMarkerMarks.binRanges:
+        for k in st.binned_data.binRanges:
             theirX.append((k[0] + k[1])/2)
+            expX.append(((k[0] + k[1])/2)+1)
+            allX.append(((k[0] + k[1])/2)-1)
 
-        expBG = BarGraphItem(x = expX, height = expMarkerMarks.bins, width = 5, brush = 'g')
-        allBG = BarGraphItem(x = allX, height = allMarkerMarks.bins, width = 5, brush = 'b')
-        theirBG = BarGraphItem(x = theirX, height = theirMarkerMarks.bins, width = 5, brush = 'r')
-
-        graph.addItem(expBG)
+        if expMarkerMarks != [None] * 10:
+            expBG = BarGraphItem(x = expX, height = expMarkerMarks, width = 1, brush = 'g')
+            graph.addItem(expBG)
+            
+        allBG = BarGraphItem(x = allX, height = allMarkerMarks, width = 1, brush = 'b')
         graph.addItem(allBG)
-        graph.addItem(theirBG)
+
+        self.theirBG = BarGraphItem(x = theirX, height = theirMarkerMarks, width = 1, brush = 'r')
+        graph.addItem(self.theirBG)
 
         return graph
     
+    def sliderChange(self):
+        self.updateGraph(self.slider.value())
+
+    def updateToFitExp(self): #Hill climbing functions used and cllaed here
+        self.updateGraph(self.slider.value()+3)
+        self.slider.setValue(self.slider.value()+3)
+
+    def updateToFitAll(self): #Hill climbing functions used and cllaed here
+        self.updateGraph(self.slider.value()-3)
+        self.slider.setValue(self.slider.value()-3)
+
+    def updateGraph(self, sv : int):
+        dif = sv-self.mod
+        self.mod = sv
+        
+        for elm in range(len(self.sc)):
+            self.sc[elm] += dif
+        
+        self.m.binnedData = st.binned_data(self.sc)
+
+        self.theirBG.setOpts(height=self.m.binnedData.bins)
