@@ -139,6 +139,9 @@ class Marker():
         return self.adjustScoresToData(self.expectedResultAll)
 
     def adjustScoresToData(self, dataToAdjustTo):
+        if dataToAdjustTo == []:
+            return 0
+
         OPTIMAL_CHI_SQUARED = 13.442
         originalScores = getAllScores(self.markedTests)
         bestScores = originalScores
@@ -159,7 +162,7 @@ class Marker():
 
             if abs(candidateBestChiSquared - 13.442) <= abs(bestChiSquared - 13.442):
                 bestScores = candidateBestScores
-                bestChiSquared = binned_data(bestScores).chiSquaredTest(self.expectedResultExemplary)
+                bestChiSquared = binned_data(bestScores).chiSquaredTest(dataToAdjustTo)
             else:
                 return (bestScores[0] - originalScores[0])
 
