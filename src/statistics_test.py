@@ -39,7 +39,7 @@ class binned_data():
         chi_squared = 0
         for i in range(0, self.numberOfBins - 1):
             difference = self.bins[i] - expected[i]
-            chi_squared += (difference * difference) if expected[i] == 0 else (difference * difference) / expected[
+            chi_squared += (difference * difference)/0.1 if expected[i] <= 0.1 else (difference * difference) / expected[
                 i]  # Duck tape fix for dividing by 0
         return chi_squared
 
@@ -143,10 +143,11 @@ class Marker():
         originalScores = getAllScores(self.markedTests)
         bestScores = originalScores
         bestChiSquared = binned_data(bestScores).chiSquaredTest(dataToAdjustTo)
+        addingConstant = binned_data.binRangeSize/5
 
         while True:
-            increasedScores = list(map(lambda x: x + 2, bestScores))
-            reducedScores = list(map(lambda x: x - 2, bestScores))
+            increasedScores = list(map(lambda x: x + addingConstant, bestScores))
+            reducedScores = list(map(lambda x: x - addingConstant, bestScores))
             chiSquaredIncreasedScores = binned_data(increasedScores).chiSquaredTest(dataToAdjustTo)
             chiSquaredReducedScores = binned_data(reducedScores).chiSquaredTest(dataToAdjustTo)
 
