@@ -59,8 +59,7 @@ class MarkerCard(ElevatedCardWidget): # https://qfluentwidgets.com/pages/compone
             self.trustIsChecked = True
 
     def inspectMarker(self):
-        self.mainWindowOwner.graphViewPlaceholder.setParent(None)
-        self.mainWindowOwner.rightPaneView.addWidget(g.MarkerGraph(self.marker))
+        self.mainWindowOwner.replaceGraph(g.MarkerGraph(self.marker))
 
 class mainWindow(QWidget):
     def __init__(self, parent=None):
@@ -77,17 +76,18 @@ class mainWindow(QWidget):
         rightPane.setLayout(self.rightPaneView)
 
         self.markerListPlaceholder = PlaceholderCard(425, 800)
-        self.graphViewPlaceholder = PlaceholderCard(800, 838)
+        self.currentDisplayingGraph = PlaceholderCard(800, 838)
 
         loadDatabaseButton = PushButton("Load database")
         loadDatabaseButton.clicked.connect(self.loadDatabase)
         self.leftPaneView.addWidget(loadDatabaseButton)
 
         self.leftPaneView.addWidget(self.markerListPlaceholder)
-        self.rightPaneView.addWidget(self.graphViewPlaceholder)
+        self.rightPaneView.addWidget(self.currentDisplayingGraph)
 
         mainWindowView.addWidget(leftPane)
         mainWindowView.addWidget(rightPane)
+
 
     def loadDatabase(self):
         self.markerListPlaceholder.setParent(None)
@@ -102,6 +102,12 @@ class mainWindow(QWidget):
 
         scrollArea.setWidget(view)
         self.leftPaneView.addWidget(scrollArea)
+
+    def replaceGraph(self, graph):
+        self.currentDisplayingGraph.setParent(None)
+        self.currentDisplayingGraph = graph
+        self.rightPaneView.addWidget(graph)
+
 
 def main():
     app = QApplication([])
