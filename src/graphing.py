@@ -5,6 +5,7 @@ from pyqtgraph import *
 import statistics_test as st
 import DBConnect as dbc
 
+
 class MarkerGraph(ElevatedCardWidget):
 
     def __init__(self, marker: st.Marker, testid):
