@@ -149,8 +149,8 @@ class Marker():
         addingConstant = binned_data.binRangeSize/5
 
         while True:
-            increasedScores = list(map(lambda x: x + addingConstant, bestScores))
-            reducedScores = list(map(lambda x: x - addingConstant, bestScores))
+            increasedScores = list(map(lambda x: min((x + addingConstant),binned_data.maxValue), bestScores))
+            reducedScores = list(map(lambda x: max((x - addingConstant),binned_data.minValue), bestScores))
             chiSquaredIncreasedScores = binned_data(increasedScores).chiSquaredTest(dataToAdjustTo)
             chiSquaredReducedScores = binned_data(reducedScores).chiSquaredTest(dataToAdjustTo)
 
