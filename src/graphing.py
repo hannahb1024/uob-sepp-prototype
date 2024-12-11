@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import *
 import PyQt5.QtCore as core
 from qfluentwidgets import *
 from pyqtgraph import *
-import statistics_test as st
+import src.statistics_test as st
 
 class MarkerGraph(ElevatedCardWidget):
 
