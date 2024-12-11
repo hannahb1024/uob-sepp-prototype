@@ -75,11 +75,11 @@ class MarkerGraph(ElevatedCardWidget):
 
     def updateToFitExp(self): #Hill climbing functions used and cllaed here
         self.updateGraph(self.m.adjustScoresToExemplary())
-        self.slider.setValue(self.m.adjustScoresToExemplary())
+        self.slider.setValue(int(self.m.adjustScoresToExemplary()))
 
     def updateToFitAll(self): #Hill climbing functions used and cllaed here
         self.updateGraph(self.m.adjustScoresToAll())
-        self.slider.setValue(self.m.adjustScoresToAll())
+        self.slider.setValue(int(self.m.adjustScoresToAll()))
 
     def updateGraph(self, sv : int):
         dif = sv-self.mod

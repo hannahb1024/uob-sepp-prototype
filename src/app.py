@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import *
 from qfluentwidgets import *
 import statistics_test as st
 import graphing as g
+import DBConnect as dbc
 
 def exampleTestingFunction():
     return "Hello, world!"
@@ -64,6 +65,7 @@ class MarkerCard(ElevatedCardWidget): # https://qfluentwidgets.com/pages/compone
 class mainWindow(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.makersGrabbed = False
         mainWindowView = QHBoxLayout()
         self.leftPaneView = QVBoxLayout()
         self.rightPaneView = QVBoxLayout()
@@ -82,6 +84,10 @@ class mainWindow(QWidget):
         loadDatabaseButton.clicked.connect(self.loadDatabase)
         self.leftPaneView.addWidget(loadDatabaseButton)
 
+        self.dropDown = QComboBox()
+        self.dropDown.addItems(self.getCleanedTestIds())
+        self.leftPaneView.addWidget(self.dropDown)
+
         self.leftPaneView.addWidget(self.markerListPlaceholder)
         self.rightPaneView.addWidget(self.currentDisplayingGraph)
 
@@ -89,19 +95,26 @@ class mainWindow(QWidget):
         mainWindowView.addWidget(rightPane)
 
 
+    def getCleanedTestIds(self):
+        ids = dbc.testIDCollect()
+        cleaned = []
+        for item in ids:
+            cleaned.append(str(item[0]))
+        return cleaned
+
     def loadDatabase(self):
         self.markerListPlaceholder.setParent(None)
-        scrollArea = SingleDirectionScrollArea()
-        scrollArea.setFixedSize(425, 800)
+        self.markerListPlaceholder = SingleDirectionScrollArea()
+        self.markerListPlaceholder.setFixedSize(425, 800)
 
         view = QWidget()
         layout = QVBoxLayout(view)
-        st.loadNewTest(0)
+        st.loadNewTest(int(self.dropDown.currentText()))
         for marker in st.getMarkers():
             layout.addWidget(MarkerCard(marker, self))
 
-        scrollArea.setWidget(view)
-        self.leftPaneView.addWidget(scrollArea)
+        self.markerListPlaceholder.setWidget(view)
+        self.leftPaneView.addWidget(self.markerListPlaceholder)
 
     def replaceGraph(self, graph):
         self.currentDisplayingGraph.setParent(None)
