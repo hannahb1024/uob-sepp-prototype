@@ -1,0 +1,31 @@
+#extracted with https://aur.archlinux.org/packages/docker-autocompose
+networks: {}
+services:
+  elegant_napier:
+    command:
+      - postgres
+    container_name: elegant_napier12
+    entrypoint:
+      - docker-entrypoint.sh
+    environment:
+      - POSTGRES_PASSWORD=P3p3823rCvEq6HpELsxCdn4RwBlaE5
+      - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/postgresql/17/bin
+      - GOSU_VERSION=1.17
+      - LANG=en_US.utf8
+      - PG_MAJOR=17
+      - PG_VERSION=17.2-1.pgdg120+1
+      - PGDATA=/var/lib/postgresql/data
+      - POSTGRES_USER=sepp
+      - POSTGRES_DB=marking
+    expose:
+      - 5432/tcp
+    hostname: f800f859ae8d
+    image: ghcr.io/hannahb1024/uob-sepp-prototype/seppgres:latest
+    ipc: private
+    logging:
+      driver: json-file
+      options: {}
+    mac_address: 02:42:ac:11:00:02
+    working_dir: /
+version: '"3"'
+
