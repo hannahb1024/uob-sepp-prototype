@@ -1,0 +1,33 @@
+name: build_package
+on: workflow_dispatch
+
+jobs:
+  make-binary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Poetry
+        run: python -m pip install --upgrade pip && pip install poetry
+
+      - name: Install Dependencies & Configure Venv
+        run: poetry install && poetry
+
+      - name: Build Package
+        run: poetry run pyinstaller src/app.py --onefile --name marking-detector-prototype --windowed
+
+      - name: Publish To Releases #https://stackoverflow.com/questions/75679683/how-can-i-auto-generate-a-release-note-and-create-a-release-using-github-actions
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref_name }}
+        run: |
+          gh release create "$tag" \
+            --repo="$GITHUB_REPOSITORY" \
+            --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
+            --generate-notes
