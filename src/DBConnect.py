@@ -8,7 +8,7 @@ from sqlalchemy import create_engine
 
 # urllib.parse.quote_plus("your_${{secrets.POSTGRES_PASSWORD}}")#
 def testIDCollect(): #Test IDs for the drop down (returns a list)
-    engine = create_engine('postgresql+psycopg2://sepp:${{secrets.POSTGRES_PASSWORD}}@127.0.0.1:5432/marking') #CHANGE THIS TO THE CONTAINER REFERENCE WHEN IT IS READY 
+    engine = create_engine('postgresql+psycopg2://sepp:${{secrets.POSTGRES_PASSWORD}}@89.241.26.49:5432/marking') #CHANGE THIS TO THE CONTAINER REFERENCE WHEN IT IS READY 
     try:
         with engine.connect() as connection:
             print('Successfully connected to the PostgreSQL database')
@@ -24,7 +24,7 @@ def testIDCollect(): #Test IDs for the drop down (returns a list)
 
 
 def markerDataFromID(id): #Returns all the data from the markers with that test ID
-    engine = create_engine('postgresql+psycopg2://sepp:${{secrets.POSTGRES_PASSWORD}}@127.0.0.1:5432/marking') #CHANGE THIS TO THE CONTAINER REFERENCE WHEN IT IS READY
+    engine = create_engine('postgresql+psycopg2://sepp:${{secrets.POSTGRES_PASSWORD}}@89.241.26.49:5432/marking') #CHANGE THIS TO THE CONTAINER REFERENCE WHEN IT IS READY
     try:
         with engine.connect() as connection:
             print('Successfully connected to the PostgreSQL database')
@@ -40,7 +40,7 @@ def markerDataFromID(id): #Returns all the data from the markers with that test 
 
 
 def testCollect(id): #Test IDs for the drop down (returns a list)
-    engine = create_engine('postgresql+psycopg2://sepp:${{secrets.POSTGRES_PASSWORD}}@127.0.0.1:5432/marking') #CHANGE THIS TO THE CONTAINER REFERENCE WHEN IT IS READY
+    engine = create_engine('postgresql+psycopg2://sepp:${{secrets.POSTGRES_PASSWORD}}@89.241.26.49:5432/marking') #CHANGE THIS TO THE CONTAINER REFERENCE WHEN IT IS READY
     try:
         with engine.connect() as connection:
             print('Successfully connected to the PostgreSQL database')
@@ -55,7 +55,7 @@ def testCollect(id): #Test IDs for the drop down (returns a list)
         print(f'Sorry failed to connect: {ex}')
 
 def updateDatabase(markerID, testID, val): #Updates the database where marker id is the marker id and test id is the test id and val is the values that the mark should change by
-    engine = create_engine('postgresql+psycopg2://sepp:${{secrets.POSTGRES_PASSWORD}}@127.0.0.1:5432/marking') #CHANGE THIS TO THE CONTAINER REFERENCE WHEN IT IS READY
+    engine = create_engine('postgresql+psycopg2://sepp:${{secrets.POSTGRES_PASSWORD}}@89.241.26.49:5432/marking') #CHANGE THIS TO THE CONTAINER REFERENCE WHEN IT IS READY
     try:
         with engine.connect() as connection:
             print('Successfully connected to the PostgreSQL database')
