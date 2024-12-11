@@ -14,10 +14,11 @@ class PlaceholderCard(ElevatedCardWidget):
         self.setFixedSize(width, height)
 
 class MarkerCard(ElevatedCardWidget): # https://qfluentwidgets.com/pages/components/cardwidget
-    def __init__(self, marker: st.Marker, mainWindowOwner, parent=None):
+    def __init__(self, marker: st.Marker, testid , mainWindowOwner,parent=None):
         super().__init__(parent)
         self.mainWindowOwner = mainWindowOwner
         self.marker = marker
+        self.testId = testid
         self.trustIsChecked = False
         
         self.generateLabels()
@@ -60,7 +61,7 @@ class MarkerCard(ElevatedCardWidget): # https://qfluentwidgets.com/pages/compone
             self.trustIsChecked = True
 
     def inspectMarker(self):
-        self.mainWindowOwner.replaceGraph(g.MarkerGraph(self.marker))
+        self.mainWindowOwner.replaceGraph(g.MarkerGraph(self.marker, self.testId))
 
 class mainWindow(QWidget):
     def __init__(self, parent=None):
@@ -111,7 +112,7 @@ class mainWindow(QWidget):
         layout = QVBoxLayout(view)
         st.loadNewTest(int(self.dropDown.currentText()))
         for marker in st.getMarkers():
-            layout.addWidget(MarkerCard(marker, self))
+            layout.addWidget(MarkerCard(marker, int(self.dropDown.currentText()), self))
 
         self.markerListPlaceholder.setWidget(view)
         self.leftPaneView.addWidget(self.markerListPlaceholder)

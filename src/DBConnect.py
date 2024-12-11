@@ -72,7 +72,7 @@ def updateDatabase(markerID, testID, val): #Updates the database where marker id
             query = sa.select(testTable.columns.result_id, testTable.columns.mark).where(testTable.columns.marker_id == markerID, testTable.columns.test_id == testID)
             resultProxy = connection.execute(query)
             resultSet = resultProxy.fetchall()
-            for x in  resultSet:
+            for x in resultSet:
                 newMark = x[1] + val
                 query = sa.update(testTable).where(testTable.columns.result_id == x[0]).values(mark = newMark) 
 

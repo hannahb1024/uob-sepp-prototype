@@ -3,12 +3,15 @@ import PyQt5.QtCore as core
 from qfluentwidgets import *
 from pyqtgraph import *
 import src.statistics_test as st
+import src.DBConnect as dbc
+
 
 class MarkerGraph(ElevatedCardWidget):
 
-    def __init__(self, marker: st.Marker):
+    def __init__(self, marker: st.Marker, testid):
         super().__init__()
         self.m = marker
+        self.tid = testid
         self.sc = st.toScoreList(self.m.markedTests)
         self.mod = 0
 
@@ -27,6 +30,7 @@ class MarkerGraph(ElevatedCardWidget):
         self.slider.valueChanged.connect(self.sliderChange)
 
         self.saveButton = PushButton("Save")
+        self.saveButton.pressed.connect(self.updateDB)
 
         self.expButton = PushButton("Optimal due to exemplary markers")
         self.expButton.pressed.connect(self.updateToFitExp)
@@ -80,6 +84,10 @@ class MarkerGraph(ElevatedCardWidget):
     def updateToFitAll(self): #Hill climbing functions used and cllaed here
         self.updateGraph(self.m.adjustScoresToAll())
         self.slider.setValue(int(self.m.adjustScoresToAll()))
+
+    def updateDB(self):
+        dbc.updateDatabase(self.m.markerID, self.tid, self.mod)
+
 
     def updateGraph(self, sv : int):
         dif = sv-self.mod
