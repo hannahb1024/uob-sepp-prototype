@@ -3,7 +3,7 @@ import PyQt5.QtCore as core
 from qfluentwidgets import *
 from pyqtgraph import *
 import statistics_test as st
-import DBConnect as dbc
+import src.DBConnect as dbc
 
 
 class MarkerGraph(ElevatedCardWidget):
