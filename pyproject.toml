@@ -7,13 +7,14 @@ readme = "README.md"
 package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python =">=3.12,<3.14"
 pyqt5 = "5.15.11"
 pyqt5-qt5 = "=5.15.2"
 pyqt-fluent-widgets = {version = "^1.7.1", source = "pypi"}
 pyqtgraph = "^0.13.7"
 psycopg2-binary = "^2.9.10"
 sqlalchemy = "^2.0.36"
+pyinstaller = "^6.11.1"
 
 [build-system]
 requires = ["poetry-core"]
