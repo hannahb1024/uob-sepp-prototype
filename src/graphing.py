@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import *
 import PyQt5.QtCore as core
 from qfluentwidgets import *
 from pyqtgraph import *
-import statistics_test as st
+import src.statistics_test as st
 
 class MarkerGraph(ElevatedCardWidget):
 
@@ -74,12 +74,12 @@ class MarkerGraph(ElevatedCardWidget):
         self.updateGraph(self.slider.value())
 
     def updateToFitExp(self): #Hill climbing functions used and cllaed here
-        self.updateGraph(self.slider.value()+3)
-        self.slider.setValue(self.slider.value()+3)
+        self.updateGraph(self.m.adjustScoresToExemplary())
+        self.slider.setValue(int(self.m.adjustScoresToExemplary()))
 
     def updateToFitAll(self): #Hill climbing functions used and cllaed here
-        self.updateGraph(self.slider.value()-3)
-        self.slider.setValue(self.slider.value()-3)
+        self.updateGraph(self.m.adjustScoresToAll())
+        self.slider.setValue(int(self.m.adjustScoresToAll()))
 
     def updateGraph(self, sv : int):
         dif = sv-self.mod

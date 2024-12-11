@@ -23,4 +23,4 @@ jobs:
       
       - name: Run Tests
         run: poetry run python -m unittest discover -s test -p '*_tests.py'
-      
+
