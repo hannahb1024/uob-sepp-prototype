@@ -25,7 +25,7 @@ def testIDCollect(): #Test IDs for the drop down (returns a list)
         print(f'Sorry failed to connect: {ex}')
 
 
-def markerDataFromID(id): #Returns all the data from the markers with that test ID
+def markerData(): #Returns all the data from the markers with that test ID
 
     engine = create_engine('postgresql+psycopg2://sepp:${{secrets.POSTGRES_PASSWORD}}@89.241.26.49:5432/marking') #CHANGE THIS TO THE CONTAINER REFERENCE WHEN IT IS READY
 
@@ -94,7 +94,7 @@ def updateDatabase(markerID, testID, val): #Updates the database where marker id
 
 if __name__ == "__main__":
     test1 = testIDCollect()
-    test2 = markerDataFromID(4)
+    test2 = markerData()
     test3 = testCollect(4)
     test4 = updateDatabase(4, 4, 0)
     print(test1)

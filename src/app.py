@@ -1,9 +1,9 @@
 import PyQt5.QtCore as core
 from PyQt5.QtWidgets import *
 from qfluentwidgets import *
-import src.statistics_test as st
-import src.graphing as g
-import src.DBConnect as dbc
+import statistics_test as st
+import graphing as g
+import DBConnect as dbc
 
 def exampleTestingFunction():
     return "Hello, world!"
