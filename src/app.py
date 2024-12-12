@@ -1,9 +1,10 @@
-import PyQt5.QtCore as core
+import sys
+sys.path.insert(0, '../src')
 from PyQt5.QtWidgets import *
 from qfluentwidgets import *
-import src.statistics_test as st
-import src.graphing as g
-import src.DBConnect as dbc
+import statistics_test as st
+import graphing as g
+import DBConnect as dbc
 
 def exampleTestingFunction():
     return "Hello, world!"
@@ -67,6 +68,7 @@ class mainWindow(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.makersGrabbed = False
+        self.markerCards = []
         mainWindowView = QHBoxLayout()
         self.leftPaneView = QVBoxLayout()
         self.rightPaneView = QVBoxLayout()
@@ -81,9 +83,9 @@ class mainWindow(QWidget):
         self.markerListPlaceholder = PlaceholderCard(425, 800)
         self.currentDisplayingGraph = PlaceholderCard(800, 838)
 
-        loadDatabaseButton = PushButton("Load database")
-        loadDatabaseButton.clicked.connect(self.loadDatabase)
-        self.leftPaneView.addWidget(loadDatabaseButton)
+        self.loadDatabaseButton = PushButton("Load database")
+        self.loadDatabaseButton.clicked.connect(self.loadDatabase)
+        self.leftPaneView.addWidget(self.loadDatabaseButton)
 
         self.dropDown = QComboBox()
         self.dropDown.addItems(self.getCleanedTestIds())
@@ -112,7 +114,9 @@ class mainWindow(QWidget):
         layout = QVBoxLayout(view)
         st.loadNewTest(int(self.dropDown.currentText()))
         for marker in st.getMarkers():
-            layout.addWidget(MarkerCard(marker, int(self.dropDown.currentText()), self))
+            markerCardToAdd = MarkerCard(marker, int(self.dropDown.currentText()), self)
+            layout.addWidget(markerCardToAdd)
+            self.markerCards.append(markerCardToAdd)
 
         self.markerListPlaceholder.setWidget(view)
         self.leftPaneView.addWidget(self.markerListPlaceholder)
