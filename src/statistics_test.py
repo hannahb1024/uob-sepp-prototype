@@ -1,3 +1,5 @@
+import sys
+sys.path.insert(0, '../src')
 import copy
 import DBConnect as dbc
 
