@@ -24,10 +24,10 @@ jobs:
 
       - name: Publish To Releases #https://stackoverflow.com/questions/75679683/how-can-i-auto-generate-a-release-note-and-create-a-release-using-github-actions
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
           tag: ${{ github.ref_name }}
         run: |
-          gh release create "$tag" \
+          gh release create "$GITHUB_REF_NAME" \
             --repo="$GITHUB_REPOSITORY" \
             --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
             --generate-notes
