@@ -1,10 +1,8 @@
-import sys
-sys.path.insert(0, '../src')
 from PyQt5.QtWidgets import *
 from qfluentwidgets import *
-import statistics_test as st
-import graphing as g
-import DBConnect as dbc
+import src.statistics_test as st
+import src.graphing as g
+import src.DBConnect as dbc
 
 def exampleTestingFunction():
     return "Hello, world!"
