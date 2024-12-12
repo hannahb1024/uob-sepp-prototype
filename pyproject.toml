@@ -15,6 +15,7 @@ pyqtgraph = "^0.13.7"
 psycopg2-binary = "^2.9.10"
 sqlalchemy = "^2.0.36"
 pyinstaller = "^6.11.1"
+opencv-python-headless = "^4.10.0.84"
 
 [build-system]
 requires = ["poetry-core"]
