@@ -48,7 +48,7 @@ class MarkerCard(ElevatedCardWidget): # https://qfluentwidgets.com/pages/compone
         self.trustAndInspectHorizontal.setLayout(self.trustAndInspectHorizontalLayout)
     
     def generateLabels(self):
-        self.markerName = BodyLabel("Name: " + self.marker.firstName + " " + self.marker.lastName, self)
+        self.markerName = BodyLabel("Name: " + self.marker.firstName + " " + self.marker.lastName + " " + st.getConcern(self.marker), self)
         self.numTestsMarked = BodyLabel("Tests marked: " + str(len(self.marker.markedTests)), self)
         self.rank = BodyLabel("Rank: " + self.marker.role, self)
 
