@@ -1,3 +1,5 @@
+import sys
+sys.path.insert(0, '../src')
 import PyQt5.QtCore as core
 from PyQt5.QtWidgets import *
 from qfluentwidgets import *
