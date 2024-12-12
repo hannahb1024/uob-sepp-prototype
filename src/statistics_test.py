@@ -1,7 +1,5 @@
-import sys
-sys.path.insert(0, '../src')
 import copy
-import DBConnect as dbc
+import sys.DBConnect as dbc
 
 def countInRange(list, min, max):  # Counts the number of numbers withing the given range
     count = 0
