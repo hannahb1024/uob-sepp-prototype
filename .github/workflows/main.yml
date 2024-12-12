@@ -10,12 +10,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: find what is going wrong with qt
-        run: export QT_DEBUG_PLUGINS=1
-
-      - name: install ui dependencies for integration tests
-        run: sudo apt-get install libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libwayland-dev -qq libglu1-mesa-dev libx11-xcb-dev '^libxcb*' libxcb-xinerama0 libxcb-util1
-        
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
