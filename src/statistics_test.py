@@ -324,18 +324,25 @@ def getConcern(marker: Marker):
     match marker.getConcernLevel():
         case 0:
             print("🔵")
+            return("🔵")
         case 1:
             print("🟢")
+            return("🟢")
         case 2:
             print("🟡")
+            return("🟡")
         case 3:
             print("🟠")
+            return("🟠")
         case 4:
             print("🟧")
+            return("🟧")
         case 5:
             print("🔴")
+            return("🔴")
         case 6:
             print("🟥")
+            return("🟥")
 
 
 def printMarkers():
