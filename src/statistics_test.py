@@ -1,5 +1,5 @@
 import copy
-
+import src.DBConnect as dbc
 
 def countInRange(list, min, max):  # Counts the number of numbers withing the given range
     count = 0
@@ -176,26 +176,34 @@ class Marker():
 # These functions use the file system will need to change to sql
 # ---------------------------------------------------------------
 def getTestID(s: str):  # Extracts the test id from the test data string
-    testAttibutes = s.split(",")
-    return int(testAttibutes[4])
+    ids = dbc.testIDCollect()
+    cleaned = []
+    for item in ids:
+        cleaned.append(str(item[0]))
+    return cleaned
 
 
 def getMarkerID(s: str):  # Extracts the markerid from the marker data string
-    markerAttributes = s.split(",")
-    return int(markerAttributes[0])
+    #markerAttributes = s.split(",")
+    return int(s[0])
 
 
 def getData(testID):  # Creates a list of TestResult objects. NEEDS TO BE UPDATED FOR DATABASE
-    testDataFile = open("data/TestData.txt", "r")  # Loads the file
+    #testDataFile = open("data/TestData.txt", "r")  # Loads the file
     fileData = []
-    for line in testDataFile:  # Create a new TestResult object and add it to the return list if its ID matches
-        if (getTestID(line) == testID):
-            fileData.append(TestResult(line.split(",")))  # -----------   IMPORTANT!!! ------------
-    testDataFile.close()  # The testResult contructor takes a list of strings and extracts the data from that if you change the
-    return fileData  # datatype being read then you will need to update the constructor. Relevant lines 58-62
+    # for line in testDataFile:  # Create a new TestResult object and add it to the return list if its ID matches
+    #     if (getTestID(line) == testID):
+    #         fileData.append(TestResult(line.split(",")))  # -----------   IMPORTANT!!! ------------
+    # testDataFile.close()  # The testResult contructor takes a list of strings and extracts the data from that if you change the
+    # return fileData  # datatype being read then you will need to update the constructor. Relevant lines 58-62
+    testTable = dbc.testCollect(testID)
+    for item in testTable:
+        fileData.append(TestResult(item)) #Tuple? List?
+    print(fileData)
+    return fileData
 
 
-def getAllScores(testList):  # Function for extracting teh list of scores from a list of TestResult objects
+def getAllScores(testList):  # Function for extracting the list of scores from a list of TestResult objects
     intList = []
     for test in testList:
         intList.append(test.score)
@@ -273,13 +281,18 @@ def getMarkers():  # Returns a list of Marker objects. NEEDS TO BE UPDATED FOR D
         if not (test.markerID in foundMarkers):
             foundMarkers.add(test.markerID)
 
-    markerDataFile = open("data/MarkerData.txt")
+    # markerDataFile = open("data/MarkerData.txt")
     markersList = []
-    for line in markerDataFile:  # Create a new marker object if the line matches a unique marker ID
-        if getMarkerID(line) in foundMarkers:
-            markersList.append(Marker(line.split(",")))  # -----------   IMPORTANT!!! ------------
-    #                             The Marker constructor takes a list of strings and extracts data from that. If you change the datatype
-    markerDataFile.close()  # being read you will need to change the constructor. Relevant lines 76-83
+    # for line in markerDataFile:  # Create a new marker object if the line matches a unique marker ID
+    #     if getMarkerID(line) in foundMarkers:
+    #         markersList.append(Marker(line.split(",")))  # -----------   IMPORTANT!!! ------------
+    # #                             The Marker constructor takes a list of strings and extracts data from that. If you change the datatype
+    # markerDataFile.close()  # being read you will need to change the constructor. Relevant lines 76-83
+    # return markersList
+    markerTable = dbc.markerData()
+    for item in markerTable:
+        if getMarkerID(item) in foundMarkers:
+            markersList.append(Marker(item))
     return markersList
 
 
@@ -311,18 +324,25 @@ def getConcern(marker: Marker):
     match marker.getConcernLevel():
         case 0:
             print("🔵")
+            return("🔵")
         case 1:
             print("🟢")
+            return("🟢")
         case 2:
             print("🟡")
+            return("🟡")
         case 3:
             print("🟠")
+            return("🟠")
         case 4:
             print("🟧")
+            return("🟧")
         case 5:
             print("🔴")
+            return("🔴")
         case 6:
             print("🟥")
+            return("🟥")
 
 
 def printMarkers():
